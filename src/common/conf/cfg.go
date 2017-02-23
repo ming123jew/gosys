@@ -14,16 +14,5 @@ func NewCfg()*cfg.ConfigFile {
 }
 
 
-/*
 
-var Cfg *cfg.ConfigFile
-
-func SetConf()  {
-
-	var err error
-	Cfg, err = cfg.LoadConfigFile("config.ini")
-	if err != nil {
-		Cfg, err = cfg.LoadConfigFile("../config.ini")
-	}
-}*/
 

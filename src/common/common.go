@@ -9,6 +9,7 @@ import (
 	"github.com/tango-contrib/session"
 	"github.com/tango-contrib/binding"
 	"github.com/lunny/tango"
+	"github.com/tango-contrib/rbac"
 )
 
 
@@ -37,6 +38,17 @@ func init()  {
 		Directory: "./templates",
 	})
 
+
+}
+
+func MiddlerWare() tango.HandlerFunc  {
+	return func(ctx *tango.Context) {
+		if action := ctx.Action(); action != nil {
+
+
+		}
+		ctx.Next()
+	}
 }
 
 //操作基本类型
@@ -45,6 +57,7 @@ type BaseHandler struct {
 	session.Session
 	binding.Binder
 	tango.Ctx
+	rbac.Manager
 }
 
 func (x *BaseHandler)HTML(name string,T ...map[string]interface{})  {

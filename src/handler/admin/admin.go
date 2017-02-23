@@ -17,7 +17,6 @@ const (
 
 type AdminHandler struct {
 	BaseHandler
-
 }
 
 
@@ -31,6 +30,7 @@ type AdminLogin struct {
 
 
 func (x *AdminLogin) Get() {
+
 	fmt.Println( x.Ctx.Req() )
 	x.Session.Set("test", "1")
 	a := x.Session.Get("test").(string)
@@ -40,9 +40,11 @@ func (x *AdminLogin) Get() {
 }
 
 func (x *AdminLogin) Post()  {
-
+	
 
 }
+
+ 
 
 
 
