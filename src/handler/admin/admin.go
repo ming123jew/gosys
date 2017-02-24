@@ -1,28 +1,14 @@
 package handler
 
+
 import (
 
-
-)
-import (
-	. "common"
 	"fmt"
-)
-
-const (
-
 
 )
-
-
-type AdminHandler struct {
-	BaseHandler
-}
-
-
-
+//登陆结构
 type AdminLogin struct {
-	AdminHandler
+	AdminBaseHandler
 	Username string
 	Password string
 }
@@ -42,6 +28,11 @@ func (x *AdminLogin) Get() {
 func (x *AdminLogin) Post()  {
 	
 
+}
+
+func (x *AdminLogin)Del() {
+
+	x.ResponseWriter.Write([]byte("ok"))
 }
 
  

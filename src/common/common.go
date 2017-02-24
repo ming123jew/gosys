@@ -10,16 +10,43 @@ import (
 	"github.com/tango-contrib/binding"
 	"github.com/lunny/tango"
 	"github.com/tango-contrib/rbac"
+	mgov2 "gopkg.in/mgo.v2"
+	"common/mgo"
+	myRbac "common/rbac"
+	"regexp"
+	"fmt"
+	"strings"
+	"github.com/mikespook/gorbac"
+	"time"
 )
 
 
 var	Orm  *xorm.Engine
 var 	Cfg  *cfg.ConfigFile
 var 	Renders *renders.Renders
+var 	Mgo *mgov2.Session
+var	Rbac *gorbac.RBAC
+var 	Sessions *session.Sessions
+var	Session  *session.Session
+
+var	ActionName string
+var	MethodName string
+var	UriArray   []string
+
 
 
 
 func init()  {
+
+	sessions := session.New(session.Options{
+		MaxAge:time.Minute * 20,
+		//Store: redistore.New(Options{
+		//	Host:    "127.0.0.1",
+		//	DbIndex: 0,
+		//	MaxAge:  30 * time.Minute,
+		//},
+	})
+	Sessions = sessions
 
 	cfg := conf.NewCfg()
 	var server=cfg.MustValue("db","server","127.0.0.1")
@@ -33,6 +60,11 @@ func init()  {
 	Cfg = cfg
 	Orm = orm
 
+	Rbac = myRbac.NewRbac()
+
+	mgo := mgo.NewMgo("127.0.0.1:27017,127.0.0.1:27018,127.0.0.1:27019")
+	Mgo = mgo
+
 	Renders = renders.New(renders.Options{
 		Reload: true,
 		Directory: "./templates",
@@ -41,11 +73,21 @@ func init()  {
 
 }
 
-func MiddlerWare() tango.HandlerFunc  {
+func MiddlerWare(s *session.Sessions) tango.HandlerFunc  {
 	return func(ctx *tango.Context) {
 		if action := ctx.Action(); action != nil {
-
-
+			action := ctx.Route().Method().String()
+			reg := regexp.MustCompile(`([^<func(*handler.].*[^) Value>])`)
+			ActionName = strings.ToLower(reg.FindAllString(action,-1)[0])
+			UriArray = strings.Split(strings.ToLower(strings.Split(ctx.Req().RequestURI, "?")[0]), "/")
+			MethodName = UriArray[3]
+			//验证路由和操作
+			if ActionName != UriArray[2]{
+				panic("check route and action!")
+			}
+			fmt.Println("common.go:",ActionName,MethodName)
+			ss := s.Session(ctx.Req(), ctx.ResponseWriter)
+			Session = ss
 		}
 		ctx.Next()
 	}
