@@ -14,12 +14,16 @@ import (
 	"common/mgo"
 	myRbac "common/rbac"
 	"regexp"
-	"fmt"
 	"strings"
 	"github.com/mikespook/gorbac"
 	"time"
+	//"log"
+
 )
 
+const(
+	ADMIN_FLAG = "admin"			//后台入口标示
+)
 
 var	Orm  *xorm.Engine
 var 	Cfg  *cfg.ConfigFile
@@ -78,14 +82,23 @@ func MiddlerWare(s *session.Sessions) tango.HandlerFunc  {
 		if action := ctx.Action(); action != nil {
 			action := ctx.Route().Method().String()
 			reg := regexp.MustCompile(`([^<func(*handler.].*[^) Value>])`)
-			ActionName = strings.ToLower(reg.FindAllString(action,-1)[0])
-			UriArray = strings.Split(strings.ToLower(strings.Split(ctx.Req().RequestURI, "?")[0]), "/")
-			MethodName = UriArray[3]
-			//验证路由和操作
-			if ActionName != UriArray[2]{
-				panic("check route and action!")
+			ActionName = strings.ToLower(reg.FindAllString(action,-1)[0])			//操作名称
+			UriArray = strings.Split(strings.ToLower(strings.Split(ctx.Req().RequestURI, "?")[0]), "/")  //地址分割
+
+			if len(UriArray)>3{
+				MethodName = UriArray[3]
+			}else{
+				MethodName = "index"
 			}
-			fmt.Println("common.go:",ActionName,MethodName)
+
+			//后台地址需要验证路由操作
+			if UriArray[2]==ADMIN_FLAG{
+				if ActionName != UriArray[3]{
+					panic("check route and action!")
+				}
+			}
+
+			//fmt.Println("common.go:",ActionName,MethodName)
 			ss := s.Session(ctx.Req(), ctx.ResponseWriter)
 			Session = ss
 		}
@@ -121,3 +134,4 @@ func (x *BaseHandler)HTML(name string,T ...map[string]interface{})  {
 		"P": T2,		 //params
 	})
 }
+

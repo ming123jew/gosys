@@ -9,15 +9,18 @@ import (
 	"encoding/json"
 	"github.com/lunny/tango"
 
-	"fmt"
+	"log"
+	"model"
+	"strings"
 )
 
 const (
+	SESSION_NAME_ADMIN	= "gosys_session_name_admin"
 	USER_AUTH_TYPE 		=   2			// 默认认证类型 0:不认证 1 session登录认证 2 实时认证
 	NOT_AUTH_MODULE         = "public,user,index"	// 默认无需认证模块
 	NOT_AUTH_ACTION         = "login"		// 默认无需认证操作
 
-	ADMIN_FLAG = "admin"			//后台入口标示
+
 
 )
 
@@ -41,20 +44,48 @@ func CheckPermission(role string)(bool,string)  {
 	return true,"you have permission!"
 }
 
-func Check()  {
+func Check()  (bool,string){
+	//action not need to verify
+	for _, nap := range strings.Split(NOT_AUTH_ACTION, ",") {
+		//log.Println(nap,":",params[2])
+		if MethodName == nap {
+			return true,"this method is not need verify."
+		}
+	}
 	//认证类型
 	if  USER_AUTH_TYPE > 0 {
+		admin_user_session := Session.Get(SESSION_NAME_ADMIN)
 
-		b,s := CheckPermission("ROLE_ADMIN")
-		fmt.Println(b,s)
+		if admin_user_session != nil {
+			admin_user := admin_user_session.(model.ChatUser)
+			b,s := CheckPermission(admin_user.Roleid)
+			log.Println(b,s,admin_user.Roleid)
+			return b,s
+		}else{
+
+			return false,"you have to login at first."
+		}
+
+	}else{
+		return false,"check USER_AUTH_TYPE"
 	}
 }
 
 func AdminMiddlerWare() tango.HandlerFunc  {
 	return func(ctx *tango.Context) {
 		if action := ctx.Action(); action != nil {
-			Check()
+			b,info := Check()
+			if b==true{
+				ctx.Next()
+			}else{
+				a := map[string]interface{}{
+					"info":  info,
+					"status":200,
+				}
+				ctx.ServeJson(a)
+			}
 		}
-		ctx.Next()
+
+
 	}
 }

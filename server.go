@@ -42,5 +42,6 @@ func main()  {
 	os.Setenv("PORT",Cfg.MustValue("common","http_port","8000"))
 	os.Setenv("HOST",Cfg.MustValue("common","http_host",""))
 	//Tg.RunTLS("F:\\go\\ca\\ca.crt","F:\\go\\ca\\ca.key")
+
 	Tg.Run()
 }
