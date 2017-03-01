@@ -17,7 +17,7 @@ import (
 	"strings"
 	"github.com/mikespook/gorbac"
 	"time"
-	//"log"
+	"log"
 
 )
 
@@ -135,4 +135,29 @@ func (x *BaseHandler)HTML(name string,T ...map[string]interface{})  {
 		"P": T2,		 //params
 	})
 }
+func (x *BaseHandler)HTML2(name string,names []string,T ...map[string]interface{})  {
+	sys_params := map[string]interface{}{
 
+		"map_appkey":Cfg.MustValue("map","map_appkey",""),
+		"map_url":Cfg.MustValue("map","map_url",""),
+		"static_url":Cfg.MustValue("common","static_url",""),
+
+	}
+	T2 := make(map[string]interface{})
+	for _,v := range T{
+		T2 = v
+	}
+
+	_,err :=x.Renderer.Template(name).ParseFiles(names...)
+	if err != nil {
+		log.Println(err)
+	}
+
+	err = x.Renderer.Template(name).Execute(x.Ctx.ResponseWriter,renders.T{
+		"C": sys_params, //common
+		"P": T2,		 //params
+	})
+	if err != nil {
+		log.Println(err)
+	}
+}
