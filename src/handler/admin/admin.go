@@ -32,16 +32,29 @@ func (x *AdminLogin) Post()  {
 
 	var form AdminLogin
 	x.Bind(&form)
-	user := model.ChatUser{Username:form.Username,Password:form.Password}
+	user := model.User{Username:form.Username,Password:form.Password}
 
 	has, err := user.Exist()
 	if err != nil{
-		x.Ctx.Write([]byte("账号或密码错误."))
+
+		res := map[string]interface{}{
+			"info"		:	"账号或密码错误.",
+			"status"	:	-1,
+			"err"		: 	err,
+		}
+		x.Ctx.ServeJson(res)
+		return
 	}
 
 	//验证账号真实性
 	if user.Id==0 {
-		x.Ctx.Write([]byte("账号不存在."))
+
+		res := map[string]interface{}{
+			"info"		:	"账号不存在.",
+			"status"	:	-2,
+		}
+		x.Ctx.ServeJson(res)
+		return
 		has = false
 	}
 
@@ -49,16 +62,24 @@ func (x *AdminLogin) Post()  {
 	if has == true && user.Id>0{
 
 		log.Println(user)
-
 		x.Session.Set(SESSION_NAME_ADMIN,user)
+		//x.Ctx.Redirect("/admin/AdminMain/index")
+		res := map[string]interface{}{
+			"info"		:	"login ok",
+			"status"	:	200,
+			"gourl"		:	"/admin/AdminMain/index",
+		}
+		x.Ctx.ServeJson(res)
+		return
 
-		x.Ctx.Redirect("/admin/AdminMain/index")
 	}else{
 		res := map[string]interface{}{
 			"info"		:	"not is admin user",
-			"status"	:	200,
+			"status"	:	-3,
 		}
 		x.Ctx.ServeJson(res)
+		return
+
 	}
 
 }

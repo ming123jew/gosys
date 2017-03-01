@@ -106,6 +106,28 @@ var Login = function() {
                     NProgress.done()
                 },
 
+                submitHandler:function(form) {
+
+                    NProgress.start();
+                    $(form).ajaxSubmit({
+
+                            dataType: 'json',
+                            success: function (json) {
+                                if (json.status==200){
+                                    NProgress.done()
+                                    window.location.href = json.gourl
+                                }else{
+                                    $(".login-form .alert-danger").html(json.info).show();
+                                }
+                                NProgress.done()
+                            },
+                    })
+
+                },
+                success : function(element) {
+
+                }
+
             })
         }
     };
@@ -131,7 +153,8 @@ var Login = function() {
             $(".register-form").validate({
                 invalidHandler: function(i, h) {},
                 submitHandler: function(h) {
-                    window.location.href = "/admin/login"
+                    //window.location.href = "/admin/login"
+
                 }
             })
         }

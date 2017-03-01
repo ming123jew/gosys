@@ -57,7 +57,7 @@ func Check()  (bool,string){
 		admin_user_session := Session.Get(SESSION_NAME_ADMIN)
 
 		if admin_user_session != nil {
-			admin_user := admin_user_session.(model.ChatUser)
+			admin_user := admin_user_session.(model.User)
 			b,s := CheckPermission(admin_user.Roleid)
 			log.Println(b,s,admin_user.Roleid)
 			return b,s

@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-type ChatPositionLog struct {
+type PositionLog struct {
 
 	//Id 		int		//int(11) NOT NULL,
 	Uid 		int		//int(11) NOT NULL,
@@ -23,9 +23,9 @@ type ChatPositionLog struct {
 	Type 		string
 }
 
-func (self *ChatPositionLog)Add(x *ChatPositionLog) (error) {
+func (self *PositionLog)Add(x *PositionLog) (error) {
 	mgo := Mgo.DB("chat").C("chat_position_log")
-	err := mgo.Insert(&ChatPositionLog{
+	err := mgo.Insert(&PositionLog{
 		x.Uid,
 		x.Attime,
 		x.Module,
@@ -47,9 +47,9 @@ func (self *ChatPositionLog)Add(x *ChatPositionLog) (error) {
 	return err
 }
 
-func (self *ChatPositionLog)Exist() ChatPositionLog {
+func (self *PositionLog)Exist() PositionLog {
 	mgo := Mgo.DB("chat").C("chat_position_log")
-	result := ChatPositionLog{}
+	result := PositionLog{}
 	err := mgo.Find(self).One(&result)
 	if err !=nil{
 		log.Println(err)

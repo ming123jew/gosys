@@ -5,7 +5,9 @@ import (
 	. "common"
 )
 
-type ChatUser struct {
+
+
+type User struct {
 	Id       int    ` int(10) NOT NULL`
 	Username string ` char(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL`
 	Password string ` varchar(40) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL`
@@ -17,42 +19,42 @@ type ChatUser struct {
 }
 
 //查询所有列表，不建议使用
-func (self *ChatUser) SelectAll() ([]ChatUser, error) {
+func (self *User) SelectAll() ([]User, error) {
 
-	var chatuser []ChatUser
+	var chatuser []User
 	err := Orm.Find(&chatuser)
 	return chatuser, err
 }
 
-func (self *ChatUser) Count() (int64,error) {
-	var chatuser ChatUser
+func (self *User) Count() (int64,error) {
+	var chatuser User
 	return Orm.Count(chatuser)
 }
 
-func (self *ChatUser) GetUser() (*ChatUser,error)  {
-	chatuser := &ChatUser{}
+func (self *User) GetUser() (*User,error)  {
+	chatuser := &User{}
 	_, err := Orm.Id(self.Id).Get(chatuser)
 	return chatuser,err
 }
 
-func (self *ChatUser) GetChatUserById(id int) (*ChatUser, error) {
-	chatuser := &ChatUser{Id: id}
+func (self *User) GetUserById(id int) (*User, error) {
+	chatuser := &User{Id: id}
 	_, err := Orm.Get(chatuser)
 	return chatuser, err
 }
 
-func (self *ChatUser) Exist() (bool, error) {
+func (self *User) Exist() (bool, error) {
 
 	return Orm.Get(self)
 
 }
 
-func (self *ChatUser) ExistEmail() (bool, error) {
+func (self *User) ExistEmail() (bool, error) {
 	log.Print(self.Email)
-	return Orm.Get(&ChatUser{Email: self.Email})
+	return Orm.Get(&User{Email: self.Email})
 
 }
 
-type ChatUserSession struct {
+type UserSession struct {
 	Username string ` char(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL`
 }

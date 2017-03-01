@@ -5,6 +5,7 @@ import (
 	"time"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
+	"github.com/go-xorm/core"
 )
 
 func NewOrm(server string,username string,password string,db_name string,charset string,port string) *xorm.Engine  {
@@ -17,7 +18,8 @@ func NewOrm(server string,username string,password string,db_name string,charset
 		log.Println(err)
 	}
 	orm.TZLocation = time.Local
-
+	tbMapper := core.NewPrefixMapper(core.SnakeMapper{}, "gosys_")
+	orm.SetTableMapper(tbMapper)
 	return orm
 }
 

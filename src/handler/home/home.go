@@ -52,7 +52,7 @@ func (x *HomeHandler)Post()  {
 	log.Println(result)
 	*/
 
-	result2 := []model.ChatPositionLog{}
+	result2 := []model.PositionLog{}
 	mgo2 := Mgo.DB("chat").C("chat_position_log")
 	mgo2.Find(bson.M{"uid":1}).All(&result2)
 	for i,v := range result2{
