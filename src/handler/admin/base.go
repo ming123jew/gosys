@@ -3,13 +3,11 @@ package handler
 //主要定义结构类型，并分配每个接口类型的角色权限
 import (
 	. "common"
-
-	//"strings"
 	"github.com/mikespook/gorbac"
 	"encoding/json"
 	"github.com/lunny/tango"
 
-	"log"
+	//"log"
 	"model"
 	"strings"
 )
@@ -59,7 +57,7 @@ func Check()  (bool,string){
 		if admin_user_session != nil {
 			admin_user := admin_user_session.(model.User)
 			b,s := CheckPermission(admin_user.Roleid)
-			log.Println(b,s,admin_user.Roleid)
+			//log.Println(b,s,admin_user.Roleid)
 			return b,s
 		}else{
 

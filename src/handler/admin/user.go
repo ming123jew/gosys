@@ -11,7 +11,10 @@ type AdminUser struct {
 }
 
 //列表
-func (x *AdminUser)List()  {
+func (x *AdminUser)List(){
+
+	var params = make(map[string]interface{})
+	x.HTML2("administrator/user/list.html",[]string{"templates/administrator/menu.html"},params)
 
 }
 //添加

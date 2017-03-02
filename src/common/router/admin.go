@@ -7,6 +7,9 @@ import (
 
 func AdminRouter(g *tango.Group)  {
 	g.Use(A.AdminMiddlerWare())
+	g.Group("/AdminUser",func(g *tango.Group) {
+		g.Route([]string{"GET:List","POST:Post"},"/list",new(A.AdminUser))
+	})
 	g.Group("/AdminMain",func(g *tango.Group) {
 		g.Route([]string{"GET:Get","POST:Post"},"/index",new(A.AdminMain))
 	})

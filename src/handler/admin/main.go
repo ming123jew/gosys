@@ -8,7 +8,7 @@ type AdminMain struct {
 
 func (x *AdminMain)Get()  {
 
-	log.Println(x.Session.Get(SESSION_NAME_ADMIN))
+	log.Println()
 	var params = make(map[string]interface{})
 
 	x.HTML2("administrator/index.html",[]string{"templates/administrator/menu.html","templates/administrator/a.html"},params)

@@ -150,7 +150,7 @@ func (x *BaseHandler)HTML2(name string,names []string,T ...map[string]interface{
 
 	_,err :=x.Renderer.Template(name).ParseFiles(names...)
 	if err != nil {
-		log.Println(err)
+		log.Println("common.go:153",err)
 	}
 
 	err = x.Renderer.Template(name).Execute(x.Ctx.ResponseWriter,renders.T{
@@ -158,6 +158,6 @@ func (x *BaseHandler)HTML2(name string,names []string,T ...map[string]interface{
 		"P": T2,		 //params
 	})
 	if err != nil {
-		log.Println(err)
+		log.Println("common.go:161",err)
 	}
 }

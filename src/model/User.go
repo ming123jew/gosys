@@ -1,8 +1,8 @@
 package model
 
 import (
-	"log"
 	. "common"
+	"log"
 )
 
 
