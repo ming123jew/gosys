@@ -72,15 +72,16 @@ func Check()  (bool,string){
 func AdminMiddlerWare() tango.HandlerFunc  {
 	return func(ctx *tango.Context) {
 		if action := ctx.Action(); action != nil {
-			b,info := Check()
+			b,_ := Check()
 			if b==true{
 				ctx.Next()
 			}else{
-				a := map[string]interface{}{
-					"info":  info,
-					"status":200,
-				}
-				ctx.ServeJson(a)
+				//a := map[string]interface{}{
+				//	"info":  info,
+				//	"status":200,
+				//}
+				//ctx.ServeJson(a)
+				ctx.Redirect("/admin/AdminLogin/login")
 			}
 		}
 

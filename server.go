@@ -17,6 +17,8 @@ func main()  {
 	Tg.Use(Renders)
 	//SESSION
 	Tg.Use(Sessions)
+	//Cache
+	Tg.Use(Cache)
 	//binding 自动提取请求参数到结构体的映射和要求检查
 	Tg.Use(binding.Bind())
 

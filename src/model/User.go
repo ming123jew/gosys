@@ -3,6 +3,7 @@ package model
 import (
 	. "common"
 	"log"
+
 )
 
 
@@ -21,26 +22,56 @@ type User struct {
 //查询所有列表，不建议使用
 func (self *User) SelectAll() ([]User, error) {
 
-	var chatuser []User
-	err := Orm.Find(&chatuser)
-	return chatuser, err
+	var user []User
+	err := Orm.Find(&user)
+	return user, err
+}
+
+//根据分页查询
+func (self *User)SelectByPage(pageSize int,start int,cache bool)([]User,error)  {
+	var user []User
+	var err error
+	key := "User_SelectByPage_"+string(start)
+
+	//读取缓存
+	data := CacheGetList(key)
+	if data != nil && cache==true{
+		user = data.([]User)
+		log.Println("beforeok:",data)
+	}
+
+	//缓存不存在则读取数据库
+	if data==nil{
+
+		after := func() {
+			if cache==true  {
+				//写入缓存
+				CachePutList(key,user,CACHE_TIME_OUT)
+				log.Println("afterok")
+			}
+		}
+		err = Orm.Limit(pageSize,start).Find(&user)
+		after()
+	}
+
+	return user,err
 }
 
 func (self *User) Count() (int64,error) {
-	var chatuser User
-	return Orm.Count(chatuser)
+	var user User
+	return Orm.Count(user)
 }
 
 func (self *User) GetUser() (*User,error)  {
-	chatuser := &User{}
-	_, err := Orm.Id(self.Id).Get(chatuser)
-	return chatuser,err
+	user := &User{}
+	_, err := Orm.Id(self.Id).Get(user)
+	return user,err
 }
 
 func (self *User) GetUserById(id int) (*User, error) {
-	chatuser := &User{Id: id}
-	_, err := Orm.Get(chatuser)
-	return chatuser, err
+	user := &User{Id: id}
+	_, err := Orm.Get(user)
+	return user, err
 }
 
 func (self *User) Exist() (bool, error) {

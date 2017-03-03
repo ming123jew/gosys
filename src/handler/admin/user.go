@@ -3,6 +3,11 @@ import (
 
 
 )
+import (
+	"model"
+	"strconv"
+)
+
 //用户操作结构
 type AdminUser struct {
 	AdminBaseHandler
@@ -13,8 +18,19 @@ type AdminUser struct {
 //列表
 func (x *AdminUser)List(){
 
+	p:=x.Ctx.Req().FormValue("page")
+	page,err := strconv.Atoi(p)
+	if err != nil{}
+
+	list,_ := new(model.User).SelectByPage(1,page,true)
+
+	x.Cache.Put("test", "Hello Tango!", 20)
+
 	var params = make(map[string]interface{})
-	x.HTML2("administrator/user/list.html",[]string{"templates/administrator/menu.html"},params)
+	params["list"] = list
+	params["cache"] = x.Cache.Get("test")
+
+	x.HTML2([]string{"templates/administrator/user/list.html","templates/administrator/menu.html","templates/administrator/header.html"},params)
 
 }
 //添加

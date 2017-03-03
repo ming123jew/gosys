@@ -3,11 +3,13 @@ package common
 import (
 	"common/orm"
 	"common/conf"
+	mycache "common/cache"
 	"github.com/go-xorm/xorm"
 	cfg "github.com/Unknwon/goconfig"
 	"github.com/tango-contrib/renders"
 	"github.com/tango-contrib/session"
 	"github.com/tango-contrib/binding"
+	"github.com/tango-contrib/cache"
 	"github.com/lunny/tango"
 	"github.com/tango-contrib/rbac"
 	mgov2 "gopkg.in/mgo.v2"
@@ -18,6 +20,8 @@ import (
 	"github.com/mikespook/gorbac"
 	"time"
 	"log"
+
+	"html/template"
 
 )
 
@@ -32,6 +36,7 @@ var 	Mgo *mgov2.Session
 var	Rbac *gorbac.RBAC
 var 	Sessions *session.Sessions
 var	Session  *session.Session
+var	Cache 	 *cache.Caches
 
 var	ActionName string
 var	MethodName string
@@ -52,6 +57,9 @@ func init()  {
 	})
 	Sessions = sessions
 
+	//cache
+	Cache = mycache.NewCache()
+
 	cfg := conf.NewCfg()
 	var server=cfg.MustValue("db","server","127.0.0.1")
 	var username=cfg.MustValue("db","username","username")
@@ -64,6 +72,7 @@ func init()  {
 	Cfg = cfg
 	Orm = orm
 
+
 	Rbac = myRbac.NewRbac()
 
 	mgo := mgo.NewMgo("127.0.0.1:27017,127.0.0.1:27018,127.0.0.1:27019")
@@ -73,6 +82,8 @@ func init()  {
 		Reload: true,
 		Directory: "./templates",
 	})
+
+
 
 
 
@@ -114,6 +125,7 @@ type BaseHandler struct {
 	binding.Binder
 	tango.Ctx
 	rbac.Manager
+	cache.Cache
 }
 
 func (x *BaseHandler)HTML(name string,T ...map[string]interface{})  {
@@ -135,7 +147,14 @@ func (x *BaseHandler)HTML(name string,T ...map[string]interface{})  {
 		"P": T2,		 //params
 	})
 }
-func (x *BaseHandler)HTML2(name string,names []string,T ...map[string]interface{})  {
+
+
+func (x *BaseHandler)HTML2(names []string,T ...map[string]interface{})  {
+	t, err := template.ParseFiles(names...)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	sys_params := map[string]interface{}{
 
 		"map_appkey":Cfg.MustValue("map","map_appkey",""),
@@ -148,16 +167,12 @@ func (x *BaseHandler)HTML2(name string,names []string,T ...map[string]interface{
 		T2 = v
 	}
 
-	_,err :=x.Renderer.Template(name).ParseFiles(names...)
-	if err != nil {
-		log.Println("common.go:153",err)
-	}
-
-	err = x.Renderer.Template(name).Execute(x.Ctx.ResponseWriter,renders.T{
+	err = t.Execute(x.Ctx.ResponseWriter, renders.T{
 		"C": sys_params, //common
 		"P": T2,		 //params
 	})
 	if err != nil {
-		log.Println("common.go:161",err)
+		log.Fatal(err)
 	}
+
 }
